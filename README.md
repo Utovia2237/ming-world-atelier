@@ -2,6 +2,8 @@
 
 在线使用：[打开世界工坊](https://utovia2237.github.io/ming-world-atelier/)。离线时也可双击 **启动世界工坊.cmd** 或打开 **index.html**。建议使用新版 Edge、Chrome 或 Firefox。工具无需后端、API 密钥或付费服务。
 
+本项目由作者与 OpenAI Codex 协助构建、测试和部署。地形算法、参数约束与内容设定由项目作者负责；Codex 协助完成代码实现、自动化验证、GitHub Pages 配置和协作文档。
+
 ## 功能
 
 - 正圆地图、中央连通内海、连续环状大陆。圆周内侧始终为陆地；不生成河流、湖泊或其他内陆水网。
