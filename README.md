@@ -2,7 +2,7 @@
 
 在线使用：[打开世界工坊](https://utovia2237.github.io/ming-world-atelier/)。离线时也可双击 **启动世界工坊.cmd** 或打开 **index.html**。建议使用新版 Edge、Chrome 或 Firefox。工具无需后端、API 密钥或付费服务。
 
-本项目由作者与 OpenAI Codex 协助构建、测试和部署。地形算法、参数约束与内容设定由项目作者负责；Codex 协助完成代码实现、自动化验证、GitHub Pages 配置和协作文档。
+本项目由作者与 OpenAI Codex 协助构建、测试和部署。地形算法、参数约束与内容设定由项目作者负责；Codex 协助完成代码实现和自动化验证。
 
 ## 功能
 
@@ -62,10 +62,6 @@ PNG 使用 16 位无符号灰度值：高度（米）= 灰度 / 65535 × 16000 �
 - tests/：地形约束、界面逻辑与高清 PNG 自动化测试。
 - package.json：开发测试命令与依赖；不参与浏览器运行。
 
-## GitHub 部署与协作
-
-官方仓库：[Utovia2237/ming-world-atelier](https://github.com/Utovia2237/ming-world-atelier)。项目通过 GitHub Pages 提供在线网站。每次功能修改、修复或版本迭代都必须提交并推送到 GitHub；请按 [CONTRIBUTING.md](CONTRIBUTING.md) 的流程通过测试、Pull Request 与 Pages 部署。`main` 分支合并后先测试，通过后自动发布。版本记录见 [CHANGELOG.md](CHANGELOG.md)。
-
 ## 数据保存与隐私
 
 工具不提供云端保存或跨浏览器同步。地图计算、项目导入和文件导出均在使用者的浏览器中完成；参数与地图不会上传到 GitHub 仓库，也不会成为其他使用者的默认设置。
@@ -74,4 +70,4 @@ PNG 使用 16 位无符号灰度值：高度（米）= 灰度 / 65535 × 16000 �
 
 **浏览器缓存不是可靠备份，本站不会在云端保留你的项目或生成结果。请自行点击「保存项目」导出 JSON，并导出满意的 PNG 地图或高度图。** 清除网站数据、使用无痕窗口或更换设备可能丢失本机缓存；之后可导入项目 JSON 继续编辑。
 
-不加载远程脚本、字体或素材。GitHub Pages 托管页面和程序静态文件；只有开发者提交并推送代码才会更新仓库和网站。
+不加载远程脚本、字体或素材。
