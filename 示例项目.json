@@ -1,0 +1,89 @@
+{
+  "format": "ming-world-atelier",
+  "version": "1.4.0",
+  "seed": "MING-0207",
+  "ocean": 15,
+  "coast": 66,
+  "coastStretch": 24,
+  "centralIslandSize": 0.5,
+  "mountains": 68,
+  "mountainRadius": 79,
+  "mountainVariance": 10,
+  "mountainNetwork": 40,
+  "mountainChain": 44,
+  "mountainStretch": 16,
+  "islands": 48,
+  "relief": 64,
+  "lightMode": "orbit",
+  "lightAngle": 315,
+  "lightHeight": 25,
+  "preset": "atlas",
+  "stops": [
+    [
+      -6000,
+      "#245b75"
+    ],
+    [
+      -2400,
+      "#347895"
+    ],
+    [
+      -800,
+      "#579bb3"
+    ],
+    [
+      -180,
+      "#a5cad0"
+    ],
+    [
+      -1,
+      "#c4dad4"
+    ],
+    [
+      0,
+      "#dddcc0"
+    ],
+    [
+      110,
+      "#b5c18b"
+    ],
+    [
+      400,
+      "#a7b17a"
+    ],
+    [
+      850,
+      "#d1c797"
+    ],
+    [
+      1500,
+      "#bcaa87"
+    ],
+    [
+      2400,
+      "#998777"
+    ],
+    [
+      3300,
+      "#c3bcb0"
+    ],
+    [
+      4300,
+      "#f2f0e7"
+    ]
+  ],
+  "background": "#eeede8",
+  "colorMode": "smooth",
+  "hillshade": true,
+  "shade": 62,
+  "contours": false,
+  "contourInterval": 400,
+  "bathymetry": true,
+  "coastline": true,
+  "texture": true,
+  "ticks": false,
+  "legend": false,
+  "fade": 12,
+  "exportSize": 2880,
+  "transparent": false
+}

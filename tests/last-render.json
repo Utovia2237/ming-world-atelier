@@ -1,0 +1,13 @@
+{
+  "seed": "MING-0207",
+  "size": 1280,
+  "ocean": 14.99998414218749,
+  "land": 85.0000158578125,
+  "maximum": 4981,
+  "mountainArea": 20.096695325770714,
+  "inside": 1261208,
+  "waterPixels": 189181,
+  "threshold": 0.3125897216796875,
+  "version": "1.4.0",
+  "elapsedSeconds": 22.523
+}

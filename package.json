@@ -1,0 +1,17 @@
+{
+  "name": "ming-world-atelier",
+  "version": "1.4.0",
+  "private": true,
+  "description": "离线圆形架空世界地图生成器",
+  "engines": { "node": ">=22.2.0" },
+  "scripts": {
+    "test": "node tests/terrain.test.js && node tests/app.test.js",
+    "test:hires": "node tests/high-resolution.test.js",
+    "sample": "node tests/render-sample.js 2880",
+    "sample:variants": "node tests/render-variants.js"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "sharp": "^0.34.0"
+  }
+}

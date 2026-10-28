@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#244e50"><title>溟 · 世界工坊</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="controls.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./index.html"><span class="brand-mark">溟</span><span><strong>世界工坊</strong><small>MING · WORLD ATELIER</small></span></a>
+  <span class="top-description">在圆的边界，创造一个世界。</span>
+  <div class="top-actions"><button id="help-button" class="text-button">使用说明</button><button id="export-top" class="primary-button">↗ 导出地图</button></div>
+</header>
+<main class="workspace">
+  <aside class="sidebar">
+    <section class="seed-section"><div class="eyebrow">WORLD SEED <span>可复现的世界</span></div><div class="seed-row"><input id="seed" value="MING-0207" aria-label="世界种子" maxlength="80" spellcheck="false"><button id="random-seed" title="随机种子并生成新世界" aria-label="随机生成世界">⤨</button></div><p class="pending-note">调整参数后，点击下方按钮应用全部修改。</p><button id="generate" class="primary-button generate">✧　生成世界</button></section>
+    <nav class="tabs" aria-label="地图设置"><button class="active" data-tab="terrain" aria-selected="true">地形</button><button data-tab="palette" aria-selected="false">设色</button><button data-tab="layers" aria-selected="false">图层</button><button data-tab="export" aria-selected="false">导出</button></nav>
+    <div class="panel-scroll">
+      <section id="panel-terrain" class="panel active">
+        <div class="section-heading"><h2>塑造地貌</h2><span>01 / TERRAIN</span></div><p class="panel-intro">中央内海与环状大陆。每次调整，都在同一个种子上演化。</p>
+        <div class="slider-control"><label for="ocean">海洋面积 <output id="ocean-value">15%</output></label><input type="range" id="ocean" min="10" max="20" value="15"><div class="range-labels"><span>狭窄内海</span><span>宽阔内海</span></div></div>
+        <div class="slider-control"><label for="coast">海岸破碎度 <output id="coast-value">66%</output></label><input type="range" id="coast" min="0" max="100" value="66"><div class="range-labels"><span>平缓海湾</span><span>峡湾与半岛</span></div></div>
+        <div class="slider-control compact"><label for="coastStretch">流线海岸权重 <output id="coastStretch-value">24%</output></label><input type="range" id="coastStretch" min="0" max="100" value="24"><div class="range-labels"><span>自然曲折</span><span>拉伸海湾</span></div></div>
+        <div class="slider-control compact"><label for="centralIslandSize">中央岛屿面积 <output id="centralIslandSize-value">0.5%</output></label><input type="range" id="centralIslandSize" min="0.1" max="1" step="0.1" value="0.5"><div class="range-labels"><span>0.1%</span><span>1%</span></div></div>
+        <div class="slider-control"><label for="mountains">山地密度 <output id="mountains-value">68%</output></label><input type="range" id="mountains" min="0" max="100" value="68"><div class="range-labels"><span>平原为主</span><span>群山连绵</span></div></div>
+        <div class="slider-control compact"><label for="mountainRadius">山系平均距离 <output id="mountainRadius-value">79%</output></label><input type="range" id="mountainRadius" min="45" max="93" value="79"><div class="range-labels"><span>靠近中心</span><span>靠近外缘</span></div></div>
+        <div class="slider-control compact"><label for="mountainVariance">山系距离方差 <output id="mountainVariance-value">10%</output></label><input type="range" id="mountainVariance" min="0" max="25" value="10"><div class="range-labels"><span>集中成带</span><span>分散起伏</span></div></div>
+        <div class="mountain-mix"><h3>山系样式占比</h3><p class="small-note">按种子分配成片的山地。三项权重自动归一；交界处平滑过渡。</p>
+          <div class="slider-control compact"><label for="mountainNetwork">网状脊群 <output id="mountainNetwork-value">40.0%</output></label><input type="range" id="mountainNetwork" min="0" max="100" value="40"></div>
+          <div class="slider-control compact"><label for="mountainChain">链状主脉 <output id="mountainChain-value">44.0%</output></label><input type="range" id="mountainChain" min="0" max="100" value="44"></div>
+          <div class="slider-control compact"><label for="mountainStretch">流线褶皱 <output id="mountainStretch-value">16.0%</output></label><input type="range" id="mountainStretch" min="0" max="100" value="16"></div>
+        </div>
+        <div class="slider-control"><label for="islands">近海群岛 <output id="islands-value">48%</output></label><input type="range" id="islands" min="0" max="100" value="48"><div class="range-labels"><span>完整海岸</span><span>星罗棋布</span></div></div>
+        <div class="slider-control"><label for="relief">地形起伏 <output id="relief-value">64%</output></label><input type="range" id="relief" min="0" max="100" value="64"><div class="range-labels"><span>低缓丘陵</span><span>高耸山脊</span></div></div>
+        <div class="constraint-note"><span>◎</span><div><strong>正圆边界 · 全周接陆</strong><p>圆周内侧始终是大陆。海洋保持中央连通，不额外生成内陆水网。</p></div></div>
+      </section>
+      <section id="panel-palette" class="panel">
+        <div class="section-heading"><h2>为世界设色</h2><span>02 / PALETTE</span></div><div class="preset-grid" id="preset-grid"></div>
+        <label class="field-label" for="color-mode">高度色带</label><select id="color-mode"><option value="smooth">连续渐变 · 自然地形</option><option value="bands">分层设色 · 测绘图</option></select>
+        <p class="small-note">负值为海底，0 为海平面；按高度从低到高插值。可编辑高度和十六进制颜色。</p><div class="palette-header"><span>高度 / 米</span><span>颜色</span></div><div id="color-stops"></div><button id="add-stop" class="secondary-button full-width">＋ 添加高度节点</button><div class="color-setting"><label for="background-color">图外背景</label><input type="color" id="background-color" value="#eeede8"></div>
+      </section>
+      <section id="panel-layers" class="panel">
+        <div class="section-heading"><h2>地图的细节</h2><span>03 / LAYERS</span></div>
+        <label class="toggle-row"><span><strong>地形晕渲</strong><small>光源沿地图中心外侧的圆周移动，并始终指向中心</small></span><input type="checkbox" id="hillshade" checked><i></i></label>
+        <div class="slider-control compact"><label for="shade">晕渲强度 <output id="shade-value">62%</output></label><input type="range" id="shade" min="0" max="100" value="62"></div>
+        <div class="light-control"><label class="field-label" for="light-mode">光源模式</label><select id="light-mode"><option value="orbit">环绕光源 · 可调方位</option><option value="top">中心上方 · 可调高度</option></select>
+          <label for="light-angle">光源方位 <output id="light-angle-value">315° · 西北</output></label><button type="button" id="light-direction-dial" class="light-direction-dial" role="slider" aria-label="光源方位" aria-valuemin="0" aria-valuemax="359" aria-valuenow="315" aria-valuetext="315°，西北"><span class="dial-orbit"></span><span class="dial-center">地图<br>中心</span><span id="light-dot" class="light-dot"></span><span class="dial-north">北</span></button><input type="range" id="light-angle" min="0" max="359" value="315" aria-label="光源方位角，零度为正北，顺时针旋转">
+          <div class="light-height"><label for="light-height">光源高度 <output id="light-height-value">25%</output></label><input type="range" id="light-height" min="10" max="40" value="25" aria-label="中心上方光源高度"><div class="range-labels"><span>低角度</span><span>高角度</span></div></div><p id="light-mode-note" class="small-note">拖动圆周上的光点，或使用滑块。0° 为北，90° 为东。</p></div>
+        <label class="toggle-row"><span><strong>陆地等高线</strong><small>依据高度场绘制连续曲线</small></span><input type="checkbox" id="contours"><i></i></label>
+        <label class="field-label" for="contour-interval">等高距</label><select id="contour-interval"><option value="200">200 米 · 精细</option><option value="400" selected>400 米 · 标准</option><option value="800">800 米 · 简洁</option></select>
+        <label class="toggle-row"><span><strong>海底分层</strong><small>浅蓝大陆架过渡至深色内海</small></span><input type="checkbox" id="bathymetry" checked><i></i></label>
+        <label class="toggle-row"><span><strong>海岸描边</strong><small>细线勾勒海陆交界</small></span><input type="checkbox" id="coastline" checked><i></i></label>
+        <label class="toggle-row"><span><strong>纸面肌理</strong><small>轻微颗粒，不掩盖地形</small></span><input type="checkbox" id="texture" checked><i></i></label>
+        <label class="toggle-row"><span><strong>圆周刻度</strong><small>细密的制图边框</small></span><input type="checkbox" id="ticks"><i></i></label>
+        <label class="toggle-row"><span><strong>高度图例</strong><small>在画面左下角标注色带</small></span><input type="checkbox" id="legend"><i></i></label>
+        <div class="slider-control"><label for="fade">未知边缘淡化 <output id="fade-value">12%</output></label><input type="range" id="fade" min="0" max="70" value="12"><div class="range-labels"><span>清晰边界</span><span>淡入纸面</span></div></div>
+      </section>
+      <section id="panel-export" class="panel">
+        <div class="section-heading"><h2>保存这个世界</h2><span>04 / EXPORT</span></div><p class="panel-intro">按目标分辨率重算海岸与细节，不放大预览图。所有计算都在本机完成。</p>
+        <label class="field-label" for="export-size">PNG 分辨率</label><select id="export-size"><option value="1536">1536 × 1536 · 快速</option><option value="2880" selected>2880 × 2880 · 参考图精度</option><option value="4096">4096 × 4096 · 精细制图</option></select>
+        <label class="toggle-row"><span><strong>透明图外区域</strong><small>仅保留正圆形地图</small></span><input type="checkbox" id="transparent"><i></i></label><button id="export-png" class="primary-button full-width large">↗ 导出高清 PNG</button>
+        <div class="export-separator"></div><h3>可复现的项目</h3><p class="small-note">JSON 包含种子、地形参数、颜色与图层。导入即可重现，也可分享同一地形的不同设色。</p><div class="two-buttons"><button id="save-project" class="secondary-button">保存项目</button><button id="load-project" class="secondary-button">导入项目</button></div><input type="file" id="project-file" accept="application/json,.json" hidden>
+        <button id="export-height" class="secondary-button full-width height-export">导出 16 位高度图 PNG</button><p class="small-note">0–65535 对应 −8000～8000 米，图外为 0；可用于后续建模或 GIS 编辑。</p><div class="export-separator"></div><button id="reset" class="text-button">恢复初始设置</button>
+      </section>
+    </div>
+    <footer class="sidebar-footer"><span class="status-dot"></span> 本地生成 · 无需联网 <span>V 1.4</span></footer>
+  </aside>
+  <section class="map-workspace" aria-label="地图预览">
+    <div class="map-toolbar"><div><span class="eyebrow">THE INNER SEA</span><h1>未命名的溟</h1></div><div class="view-controls"><button id="zoom-out" title="缩小" aria-label="缩小">−</button><button id="zoom-fit" title="适应视图">适应</button><button id="zoom-in" title="放大" aria-label="放大">＋</button><span class="toolbar-divider"></span><button id="fullscreen" title="全屏预览" aria-label="全屏预览">⛶</button></div></div>
+    <div id="viewport" class="viewport"><div id="map-holder" class="map-holder"><canvas id="map" width="1280" height="1280" aria-label="圆形世界地图：中央海洋，四周环状大陆"></canvas></div><div id="loading" class="loading"><div class="loading-ring"></div><strong id="loading-title">正在塑造世界</strong><span id="loading-detail">计算大陆与中央海洋…</span><div class="progress-track"><i id="progress"></i></div></div><div class="viewport-hint">滚轮缩放 · 拖拽平移 · 双击复位</div></div>
+    <div class="map-meta"><div><span class="meta-label">世界种子</span><strong id="meta-seed">MING-0207</strong></div><div><span class="meta-label">海洋 / 陆地</span><strong id="meta-ratio">—</strong></div><div><span class="meta-label">最高海拔</span><strong id="meta-height">—</strong></div><div><span class="meta-label">预览分辨率</span><strong id="meta-resolution">1280 × 1280</strong></div><span class="map-state" id="map-state">正在生成</span></div>
+  </section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="help-dialog"><button id="close-help" class="close-dialog" aria-label="关闭说明">×</button><div class="eyebrow">A SMALL GUIDE TO WORLD MAKING</div><h2>从一片内海开始。</h2><p>修改地形、设色或图层参数后，点击「生成世界」应用全部改动；输入新种子后也可按 Enter 生成。同版本、同种子、同参数始终得到相同地形。</p><ol><li><strong>地形</strong>：海洋面积是整个圆内的海域占比。圆周全周保持陆地，山地与群岛可独立调整；三种山系按联动占比分区混合。</li><li><strong>设色</strong>：选择预设，或编辑高度节点。渐变模式柔和，分层模式更像专题地图。</li><li><strong>图层</strong>：可选择环绕光源并调整方位，或将光源置于地图中心上方并调整高度；等高线、海底色带与海岸线可分别开关。</li><li><strong>导出</strong>：高清 PNG 按当前参数原生重算。JSON 保留整个世界；高度图用于后续加工。</li></ol><p>程序化高度场与制图晕渲用于接近参考图的构图和地貌质感。不生成河流、湖泊、地名和灾害图标。高度为架空世界的相对地形。</p><p class="small-note">无需安装或联网。用 Chrome、Edge 或 Firefox 打开 index.html 即可。首次生成及 4096 导出可能需要数秒至数十秒。</p></dialog>
+<script src="terrain.js"></script><script src="app.js"></script>
+</body>
+</html>
