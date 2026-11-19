@@ -29,7 +29,7 @@
   }
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION='1.4.0';
+  const VERSION='1.5.0';
   // The old radius was .474 of the square width. .495 is the largest
   // practical expansion that keeps the circle inside every square export.
   const MAP_RADIUS=.495;
@@ -58,26 +58,38 @@
     atlas:{name:'现代地形',background:'#eeede8',stops:[[-6000,'#245b75'],[-2400,'#347895'],[-800,'#579bb3'],[-180,'#a5cad0'],[-1,'#c4dad4'],[0,'#dddcc0'],[110,'#b5c18b'],[400,'#a7b17a'],[850,'#d1c797'],[1500,'#bcaa87'],[2400,'#998777'],[3300,'#c3bcb0'],[4300,'#f2f0e7']]},
     parchment:{name:'古典羊皮纸',background:'#e7d7b5',stops:[[-6000,'#385e61'],[-2400,'#557b78'],[-700,'#789b8e'],[-160,'#a8bba4'],[-1,'#c6cead'],[0,'#dcd4a9'],[130,'#c8cc9d'],[500,'#bbb885'],[1100,'#c5af7b'],[2000,'#a88c65'],[3100,'#856b53'],[4200,'#e4d8b6']]},
     ice:{name:'极地冰原',background:'#eff1f0',stops:[[-6000,'#18394f'],[-2200,'#285c76'],[-600,'#548f9f'],[-1,'#a9ced0'],[0,'#b4c6bc'],[300,'#b6c5c3'],[900,'#c8d2cb'],[1800,'#9eafab'],[2800,'#7f9194'],[3600,'#d8e2dd'],[4600,'#f8faf5']]},
-    ember:{name:'赭土荒原',background:'#eee5d4',stops:[[-6000,'#253d4a'],[-2200,'#385d66'],[-600,'#658f8c'],[-1,'#b2bda0'],[0,'#dbcda5'],[200,'#cfc091'],[750,'#c0a16c'],[1500,'#b8865b'],[2600,'#996a50'],[3500,'#745347'],[4600,'#e1ccb2']]}
+    ember:{name:'赭土荒原',background:'#eee5d4',stops:[[-6000,'#253d4a'],[-2200,'#385d66'],[-600,'#658f8c'],[-1,'#b2bda0'],[0,'#dbcda5'],[200,'#cfc091'],[750,'#c0a16c'],[1500,'#b8865b'],[2600,'#996a50'],[3500,'#745347'],[4600,'#e1ccb2']]},
+    technical:{name:'终端等高线',background:'#191d22',colorMode:'contours',stops:[[-6000,'#123c4b'],[-1,'#65d6fc'],[0,'#8b9da9'],[4500,'#e4edf3']],contourStops:{sea:[[-8000,'#52d2f8'],[-1,'#52d2f8']],land:[[0,'#c1d0db'],[8000,'#c1d0db']]}},
+    blueprint:{name:'蓝图等高线',background:'#edf2f7',colorMode:'contours',stops:[[-6000,'#267b9b'],[-1,'#65d6fc'],[0,'#70818e'],[4500,'#263b4d']],contourStops:{sea:[[-8000,'#1886af'],[-1,'#1886af']],land:[[0,'#394b5e'],[8000,'#394b5e']]}}
   };
-  function defaults(){return{version:VERSION,seed:'MING-0207',ocean:15,coast:66,coastStretch:24,centralIslandSize:.5,mountains:68,mountainRadius:79,mountainVariance:10,mountainNetwork:40,mountainChain:44,mountainStretch:16,islands:48,relief:64,lightMode:'orbit',lightAngle:315,lightHeight:25,preset:'atlas',stops:presets.atlas.stops.map(s=>s.slice()),background:presets.atlas.background,colorMode:'smooth',hillshade:true,shade:62,contours:false,contourInterval:400,bathymetry:true,coastline:true,texture:true,ticks:false,legend:false,fade:12,exportSize:2880,transparent:false};}
+  function defaults(){return{version:VERSION,seed:'MING-0207',ocean:15,coast:66,coastStretch:24,centralIslandSize:.05,mountains:68,mountainRadius:79,mountainVariance:10,mountainNetwork:40,mountainChain:44,mountainStretch:16,islands:48,relief:64,lightMode:'top',lightHeight:25,preset:'atlas',stops:presets.atlas.stops.map(s=>s.slice()),background:presets.atlas.background,colorMode:'smooth',hillshade:true,shade:62,contours:false,contourInterval:400,bathymetry:true,coastline:true,ticks:false,exportSize:2880,contourStops:{sea:[[-8000,'#52d2f8'],[-1,'#52d2f8']],land:[[0,'#c1d0db'],[8000,'#c1d0db']]}};}
   function validate(input){
     if(!input||typeof input!=='object'||Array.isArray(input))throw Error('项目格式不正确。');
     const out=defaults();
     if(typeof input.seed==='string')out.seed=input.seed.trim().slice(0,80)||out.seed;
-    const bounds={ocean:[10,20],coast:[0,100],coastStretch:[0,100],centralIslandSize:[.1,1],mountains:[0,100],mountainRadius:[45,93],mountainVariance:[0,25],mountainNetwork:[0,100],mountainChain:[0,100],mountainStretch:[0,100],islands:[0,100],relief:[0,100],lightAngle:[0,359],lightHeight:[10,40],shade:[0,100],fade:[0,70]};
+    const bounds={ocean:[10,20],coast:[0,100],coastStretch:[0,100],centralIslandSize:[0,.1],mountains:[0,100],mountainRadius:[45,93],mountainVariance:[0,25],mountainNetwork:[0,100],mountainChain:[0,100],mountainStretch:[0,100],islands:[0,100],relief:[0,100],lightHeight:[10,40],shade:[0,100]};
     for(const [k,[a,b]]of Object.entries(bounds))if(Number.isFinite(input[k]))out[k]=clamp(input[k],a,b);
-    if(input.lightMode==='orbit'||input.lightMode==='top')out.lightMode=input.lightMode;
-    for(const k of ['hillshade','contours','bathymetry','coastline','texture','ticks','legend','transparent'])if(typeof input[k]==='boolean')out[k]=input[k];
+    for(const k of ['hillshade','contours','bathymetry','ticks'])if(typeof input[k]==='boolean')out[k]=input[k];
     if([200,400,800].includes(input.contourInterval))out.contourInterval=input.contourInterval;
     if([1536,2880,4096].includes(input.exportSize))out.exportSize=input.exportSize;
-    if(['smooth','bands'].includes(input.colorMode))out.colorMode=input.colorMode;
+    if(['smooth','bands','contours'].includes(input.colorMode))out.colorMode=input.colorMode;
     if(typeof input.background==='string'&&/^#[\da-f]{6}$/i.test(input.background))out.background=input.background;
     if(input.stops!==undefined){
       if(!Array.isArray(input.stops)||input.stops.length<4||input.stops.length>24)throw Error('色带需要 4～24 个有效高度节点。');
       out.stops=input.stops.map(s=>{if(!Array.isArray(s)||!Number.isFinite(s[0])||s[0]<-8000||s[0]>8000||!/^#[\da-f]{6}$/i.test(s[1]))throw Error('高度节点或颜色格式不正确。');return[s[0],s[1]];}).sort((a,b)=>a[0]-b[0]);
       if(out.stops.some((s,i)=>i&&s[0]===out.stops[i-1][0]))throw Error('高度节点不能重复。');
       if(!out.stops.some(s=>s[0]===0)||!out.stops.some(s=>s[0]<0)||!out.stops.some(s=>s[0]>0))throw Error('色带须包含 0 米、负高度和正高度。');
+    }
+    if(input.contourStops!==undefined){
+      if(!input.contourStops||typeof input.contourStops!=='object')throw Error('等高线色带格式不正确。');
+      for(const type of ['sea','land']){
+        const stops=input.contourStops[type];
+        if(!Array.isArray(stops)||stops.length<2||stops.length>24)throw Error('海底与陆地等高线各需至少两个高度节点。');
+        const min=type==='sea'?-8000:0,max=type==='sea'?-1:8000;
+        const sorted=stops.map(s=>{if(!Array.isArray(s)||!Number.isFinite(s[0])||s[0]<min||s[0]>max||!/^#[\da-f]{6}$/i.test(s[1]))throw Error('等高线高度节点或颜色格式不正确。');return[s[0],s[1]];}).sort((a,b)=>a[0]-b[0]);
+        if(sorted.some((s,i)=>i&&s[0]===sorted[i-1][0]))throw Error('等高线高度节点不能重复。');
+        out.contourStops[type]=sorted;
+      }
     }
     out.preset=presets[input.preset]?input.preset:'custom';
     if(out.mountainNetwork+out.mountainChain+out.mountainStretch<=0){out.mountainNetwork=40;out.mountainChain=44;out.mountainStretch=16;}
@@ -87,9 +99,7 @@
   function makeModel(s){
     const seed=hashSeed(s.seed),noise=new Noise(seed),detail=new Noise(seed^0xABC98388),rng=random(seed^0x642B1B3F),phase=rng()*TAU;
     const co=s.coast/100,isl=s.islands/100;
-    const centralArea=s.centralIslandSize/100,islandRadius=Math.sqrt(centralArea);
-    const targetEdgeRadius=Math.min(.91,Math.max(.28,Math.sqrt(s.ocean/100)+.08));
-    let islandAngle=phase+1.1,coastRadius=targetEdgeRadius,chainStart=islandRadius*1.12+.02,chainEnd=targetEdgeRadius;
+    const centralArea=s.centralIslandSize/100,islandRadius=centralArea?Math.sqrt(centralArea)/.93:0;
     // Low-frequency continental lobes plus domain-warped, scale-separated coast detail.
     function baseScore(x,y,r,includeIslets=true){
       if(r>=.974)return 10;
@@ -112,6 +122,11 @@
         +detail.n(x*9.7-salt*.47,y*9.7+salt)*(.012+.07*co)
         +detail.n(x*25.3+salt*1.31,y*25.3-salt*.83)*(.006+.035*co);
     }
+    function islandEdge(angle){
+      const islandsRoughness=(detail.n(Math.cos(angle)*18.7+4.3,Math.sin(angle)*18.7-9.1)*.19
+        +detail.n(Math.cos(angle)*43.1-7.2,Math.sin(angle)*43.1+2.6)*.10)*isl;
+      return islandRadius*(1+coastJitter(angle,17.4)+islandsRoughness);
+    }
     function coastFold(x,y,r){
       const coastWeight=s.coastStretch/100;if(!coastWeight)return 0;
       const wx=noise.n(x*2.0+19.4,y*2.0+8.7),wy=noise.n(x*2.0-11.2,y*2.0-7.3),u=x+wx*.065,v=y+wy*.065;
@@ -120,56 +135,16 @@
       const coastZone=Math.exp(-Math.pow((r-Math.sqrt(s.ocean/100))/.23,2));
       return(fold-.38)*(.015+.16*coastWeight)*coastZone*(.55+.45*modulation);
     }
-    function mainlandScore(x,y,r){return baseScore(x,y,r,false)+coastFold(x,y,r);}
-    const chainCount=Math.max(3,Math.round(3+isl*10)),chainRadius=.006+.011*isl+.004*co;
-    function alignChain(threshold){
-      let bestGap=Infinity,bestAngle=islandAngle,bestRadius=targetEdgeRadius;
-      const rays=360,step=.004,maxRadius=.94;
-      for(let i=0;i<rays;i++){
-        const angle=i/rays*TAU,edge=islandRadius*(1+coastJitter(angle,17.4));
-        let previous=Math.max(.12,edge*1.12),found=false;
-        for(let r=previous;r<=maxRadius;r+=step){
-          if(mainlandScore(Math.cos(angle)*r,Math.sin(angle)*r,r)>=threshold){
-            let lo=previous,hi=r;
-            for(let k=0;k<5;k++){const mid=(lo+hi)*.5;if(mainlandScore(Math.cos(angle)*mid,Math.sin(angle)*mid,mid)>=threshold)hi=mid;else lo=mid;}
-            const gap=hi-edge;
-            if(gap>0&&gap<bestGap){bestGap=gap;bestAngle=angle;bestRadius=hi;}
-            found=true;break;
-          }
-          previous=r;
-        }
-        if(!found)continue;
-      }
-      islandAngle=bestAngle;coastRadius=bestRadius;
-      chainStart=Math.max(islandRadius*1.12+chainRadius*.75,islandRadius+.012);
-      chainEnd=Math.max(chainStart,coastRadius-chainRadius*1.15);
-    }
-    function centerFeatures(x,y){
-      const islandEdge=islandRadius*(1+coastJitter(Math.atan2(y,x),17.4));
-      const islandShape=smooth(1.06,.72,Math.hypot(x,y)/Math.max(.006,islandEdge));
-      const chainWobble=.008+.012*isl;
-      let chainShape=0;
-      for(let i=1;i<=chainCount;i++){
-        const t=chainCount===1?chainStart:chainStart+(i-1)/(chainCount-1)*(chainEnd-chainStart),wobble=chainWobble*noise.n(i*1.73+19.4,phase*1.7+i*2.1),cx=Math.cos(islandAngle)*t+Math.cos(islandAngle+Math.PI/2)*wobble,cy=Math.sin(islandAngle)*t+Math.sin(islandAngle+Math.PI/2)*wobble;
-        const dx=x-cx,dy=y-cy,angle=Math.atan2(dy,dx),blobRadius=chainRadius*(.78+.22*detail.n(i*2.1+7.3,phase-4.8)*.5+.11*co)*(1+coastJitter(angle,31.7+i*4.9));
-        chainShape=Math.max(chainShape,smooth(1.05,.68,Math.hypot(dx,dy)/Math.max(.004,blobRadius)));
-      }
-      return{islandShape,chainShape,mask:Math.max(islandShape,chainShape)};
-    }
     function score(x,y,r){
-      const features=centerFeatures(x,y);
       let value=baseScore(x,y,r);
       // Anisotropic coastal folds recreate the elongated shoreline look of
       // stretched mountain ridges without introducing disconnected lakes.
       const coastWeight=s.coastStretch/100;
-      if(coastWeight&&features.mask<.22){
+      if(coastWeight){
         value+=coastFold(x,y,r);
       }
-      // The center island is hard-land; the chain is made from separate blobs
-      // so it reads as an archipelago and never inherits stretched coast folds.
-      value+=features.islandShape*(2.0+.35*Math.sqrt(centralArea))*(1+detail.n(x*55+7.8,y*55-4.3)*(.08+.12*co));
-      value+=features.chainShape*(.92+.24*isl);
-      if(r<.30)value-=smooth(.30,0,r)*.95*(1-Math.max(features.islandShape,features.chainShape));
+      if(r<.30)value-=smooth(.30,0,r)*.95;
+      if(r<.12)return-2;
       value+=smooth(.91,.974,r)*.36;
       return value;
     }
@@ -225,7 +200,29 @@
       const h=(plains+rise)*(.22+.78*coastRamp);
       return Math.max(1,h*smooth(0,.007,coastDistance));
     }
-      return{noise,detail,score,elevation,seed,protect:(x,y)=>centerFeatures(x,y).mask>.18,alignChain};
+      return{noise,detail,score,elevation,seed,protect:()=>false,islandRank:(x,y)=>centralArea===0?Infinity:Math.hypot(x,y)/islandEdge(Math.atan2(y,x))};
+  }
+  function placeCentralIsland(model,size,scores,guard,target){
+    if(target===0)return;
+    const radius=size*MAP_RADIUS,center=size>>1,heap=[],seen=new Set();
+    const offer=p=>{
+      if(seen.has(p))return;
+      seen.add(p);
+      const x=p%size,y=Math.floor(p/size),rank=model.islandRank((x+.5-size/2)/radius,(y+.5-size/2)/radius),item={p,rank};
+      let index=heap.length;heap.push(item);
+      while(index>0){const parent=(index-1)>>1;if(heap[parent].rank<=rank)break;heap[index]=heap[parent];index=parent;}heap[index]=item;
+    };
+    offer(center*size+center);
+    for(let count=0;count<target;){
+      const item=heap[0],last=heap.pop();
+      if(heap.length){let index=0;while(true){let child=index*2+1;if(child>=heap.length)break;if(child+1<heap.length&&heap[child+1].rank<heap[child].rank)child++;if(last.rank<=heap[child].rank)break;heap[index]=heap[child];index=child;}heap[index]=last;}
+      const ring=[item.p-size-1,item.p-size,item.p-size+1,item.p+1,item.p+size+1,item.p+size,item.p+size-1,item.p-1];
+      let waterGroups=0;
+      for(let index=0;index<ring.length;index++)if(!guard[ring[index]]&&guard[ring[(index+7)%8]])waterGroups++;
+      if(waterGroups>1){seen.delete(item.p);continue;}
+      guard[item.p]=1;scores[item.p]=10;count++;
+      offer(item.p-1);offer(item.p+1);offer(item.p-size);offer(item.p+size);
+    }
   }
   // 4-connected flood is used deliberately: diagonally touching seas do not form a channel.
   function flood(scores,size,threshold,mask,queue,guard){
@@ -314,13 +311,15 @@
   async function generate(n,settings,onProgress=()=>{}){
     if(!Number.isInteger(n)||n<128||n>4096)throw Error('地图分辨率须为 128～4096。');
     const s=validate(settings),model=makeModel(s),length=n*n,scores=new Float32Array(length),heights=new Float32Array(length),guard=new Uint8Array(length),radius=n*MAP_RADIUS;
-    onProgress(.02,'构建大陆骨架…');let threshold=calibrate(model,s);model.alignChain(threshold);threshold=calibrate(model,s);await pause();
+    onProgress(.02,'构建大陆骨架…');let threshold=calibrate(model,s);await pause();
     let inside=0;
     for(let y=0;y<n;y++){
       const yy=(y+.5-n/2)/radius;
       for(let x=0;x<n;x++){const xx=(x+.5-n/2)/radius,r=Math.hypot(xx,yy),i=y*n+x;if(r<=1){scores[i]=model.score(xx,yy,r);guard[i]=model.protect(xx,yy)?1:0;inside++;}else scores[i]=10;}
       if(y%48===0){onProgress(.05+.27*y/n,'刻画半岛、海湾与群岛…');await pause();}
     }
+    const centralIslandPixels=Math.floor(inside*s.centralIslandSize/100);
+    placeCentralIsland(model,n,scores,guard,centralIslandPixels);
     onProgress(.34,'校准中央海域面积与连通性…');await pause();
     const water=new Uint8Array(length),queue=new Uint32Array(length),targetCount=Math.round(s.ocean/100*inside);
     let span=.055,lo,hi,count=0;
@@ -360,7 +359,7 @@
       }
       if(y%36===0){onProgress(.42+.40*y/n,'雕刻山脊与低地地形…');await pause();}
     }
-    const stats={seed:s.seed,size:n,ocean:count/inside*100,land:landCount/inside*100,maximum:Math.round(maximum),mountainArea:mountainCount/Math.max(1,landCount)*100,inside,waterPixels:count,threshold,version:VERSION};
+    const stats={seed:s.seed,size:n,ocean:count/inside*100,land:landCount/inside*100,maximum:Math.round(maximum),mountainArea:mountainCount/Math.max(1,landCount)*100,inside,waterPixels:count,centralIslandPixels,threshold,version:VERSION};
     onProgress(.84,'完成地形，准备设色…');return{key:terrainKey(s,n),size:n,heights,stats};
   }
   function rgb(hex){return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
@@ -376,21 +375,29 @@
   }
   async function render(field,settings,onProgress=()=>{}){
     const s=validate(settings),n=field.size,h=field.heights,pixels=new Uint8ClampedArray(n*n*4),lut=colorTable(s.stops,s.colorMode),bg=rgb(s.background),radius=n*MAP_RADIUS,px=1/radius;
-    const strength=s.hillshade?s.shade/100:0,seed=hashSeed(s.seed),interval=s.contourInterval;
-    // Compass bearing: 0° north, 90° east. Orbit mode keeps the legacy
-    // fixed-radius source; top mode places it above the map center.
-    const bearing=s.lightAngle*Math.PI/180;
-    const sourceX=s.lightMode==='top'?0:Math.sin(bearing)*.8;
-    const sourceY=s.lightMode==='top'?0:-Math.cos(bearing)*.8;
+    const linesOnly=s.colorMode==='contours',dark=bg[0]*.2126+bg[1]*.7152+bg[2]*.0722<128;
+    const seaBase=dark?[16,39,49]:[202,233,246];
+    const strength=!linesOnly&&s.hillshade?s.shade/100:0,interval=s.contourInterval;
+    const sourceX=0,sourceY=0;
     // Compress the vertical response in center-top mode; large heights add
     // directionality without driving the diffuse term toward white.
-    const sourceZ=s.lightMode==='top'?.18+1.15*Math.sqrt(s.lightHeight/100):.8;
+    const sourceZ=.18+1.15*Math.sqrt(s.lightHeight/100);
+    const lineColors=linesOnly?colorTable([...s.contourStops.sea,...s.contourStops.land],'bands'):null;
     const sample=(x,y,fallback)=>{const v=h[clamp(y,0,n-1)*n+clamp(x,0,n-1)];return v<-8000?fallback:v;};
+    let lineHeights=h;
+    if(linesOnly){
+      // Smooth the drawing surface at a constant visual scale, leaving field.heights intact.
+      const temporary=new Float32Array(h.length),filtered=new Float32Array(h.length),step=Math.max(1,Math.round(n/640)),weights=[1,4,6,4,1];
+      for(let y=0;y<n;y++)for(let x=0;x<n;x++){const i=y*n+x;if(h[i]<-8000){temporary[i]=h[i];continue;}let total=0;for(let k=-2;k<=2;k++)total+=sample(x+k*step,y,h[i])*weights[k+2];temporary[i]=total/16;}
+      for(let y=0;y<n;y++)for(let x=0;x<n;x++){const i=y*n+x;if(h[i]<-8000){filtered[i]=h[i];continue;}let total=0;for(let k=-2;k<=2;k++){const v=temporary[clamp(y+k*step,0,n-1)*n+x];total+=(v<-8000?temporary[i]:v)*weights[k+2];}filtered[i]=total/16;}
+      lineHeights=filtered;
+    }
+    const lineSample=(sx,sy,fallback)=>{const v=lineHeights[clamp(sy,0,n-1)*n+clamp(sx,0,n-1)];return v<-8000?fallback:v;};
     for(let y=0;y<n;y++){
       const yy=(y+.5-n/2)/radius;
       for(let x=0;x<n;x++){
         const xx=(x+.5-n/2)/radius,r=Math.hypot(xx,yy),i=y*n+x,p=i*4,z=h[i];
-        if(r>1){pixels[p]=bg[0];pixels[p+1]=bg[1];pixels[p+2]=bg[2];pixels[p+3]=s.transparent?0:255;continue;}
+        if(r>1){pixels[p]=0;pixels[p+1]=0;pixels[p+2]=0;pixels[p+3]=0;continue;}
         const land=z>=0;
         let colorZ=z;if(!land){if(!s.bathymetry)colorZ=-2800;else if(s.colorMode==='smooth')colorZ=Math.min(-1,Math.round(z/260)*260);}
         const c=(clamp(Math.round(colorZ),-8000,8000)+8000)*3;
@@ -405,28 +412,31 @@
           const step=Math.max(2,Math.round(n/240));
           const dx2=(sample(x+step,y,z)-sample(x-step,y,z))/(2*step*px*135000),dy2=(sample(x,y+step,z)-sample(x,y-step,z))/(2*step*px*135000);
           const light2=(-dx2*lightX-dy2*lightY+lightZ)/Math.sqrt(dx2*dx2+dy2*dy2+1);
-          const lightGain=s.lightMode==='top'?.68:.90,detailGain=s.lightMode==='top'?.20:.30;
-          tint=1+strength*((light-.68)*lightGain+(light2-.68)*detailGain);
-          if(s.lightMode==='top')tint=clamp(tint,.70,1.28);
+          tint=clamp(1+strength*((light-.68)*.68+(light2-.68)*.20),.70,1.28);
           // High-frequency curvature gives fine branching ridges a small ambient shadow.
           const concavity=clamp((left+right+up+down-4*z)/90,-.13,.16);
           tint-=Math.max(0,concavity)*strength*.24;
         }
-        if(s.texture){let q=Math.imul((x+seed)^(y*374761393),668265263);q=(q^(q>>>13))>>>0;tint+=((q&255)/255-.5)*(s.preset==='parchment'?.036:.019);}
         red*=tint;green*=tint;blue*=tint;
-        if(s.contours&&land&&z>45){
+        // Presentation only: contour distances sample the existing height field.
+        // No map geometry, height, seed, or terrain cache key is changed here.
+        if(linesOnly){
+          const base=land?bg:seaBase;
+          const lineZ=lineHeights[i],level=Math.round(lineZ/interval),gradient=Math.max(1,Math.hypot(lineSample(x+1,y,lineZ)-lineSample(x-1,y,lineZ),lineSample(x,y+1,lineZ)-lineSample(x,y-1,lineZ))*.5),distance=Math.abs(lineZ-level*interval)/gradient;
+          const width=(level%5===0?1:.66)*n/1280,alpha=clamp(width+.5-distance)*(land?.85:.95);
+          const inkOffset=(clamp(level*interval,land?0:-8000,land?8000:-1)+8000)*3;
+          red=base[0]*(1-alpha)+lineColors[inkOffset]*alpha;green=base[1]*(1-alpha)+lineColors[inkOffset+1]*alpha;blue=base[2]*(1-alpha)+lineColors[inkOffset+2]*alpha;
+        }else if(s.contours&&land&&z>45){
           const gradient=Math.max(1,Math.hypot(right-left,down-up)*.5),difference=Math.abs(z-Math.round(z/interval)*interval);
           const width=(.43+.23*Math.max(0,Math.round(z/interval)%5===0))*n/1280;
           const alpha=clamp(width+.5-difference/gradient)*.25;
           red=red*(1-alpha)+61*alpha;green=green*(1-alpha)+70*alpha;blue=blue*(1-alpha)+57*alpha;
         }
-        if(s.coastline){
-          const crosses=land&&(left<0||right<0||up<0||down<0);
-          if(crosses){const a=.40;red=red*(1-a)+225*a;green=green*(1-a)+227*a;blue=blue*(1-a)+192*a;}
-        }
-        if(s.fade&&r>.88){const a=smooth(.88,1,r)*s.fade/100;red=red*(1-a)+bg[0]*a;green=green*(1-a)+bg[1]*a;blue=blue*(1-a)+bg[2]*a;}
+        const crosses=land&&(left<0||right<0||up<0||down<0);
+        if(crosses){const a=linesOnly?.85:.40,ink=linesOnly?(dark?[101,214,252]:[33,132,166]):[225,227,192];red=red*(1-a)+ink[0]*a;green=green*(1-a)+ink[1]*a;blue=blue*(1-a)+ink[2]*a;}
+        if(r>.88){const a=smooth(.88,1,r)*.20;red=red*(1-a)+bg[0]*a;green=green*(1-a)+bg[1]*a;blue=blue*(1-a)+bg[2]*a;}
         const coverage=clamp((1-r)*radius+.5);
-        if(s.transparent){pixels[p]=red;pixels[p+1]=green;pixels[p+2]=blue;pixels[p+3]=Math.round(255*coverage);}else{pixels[p]=red*coverage+bg[0]*(1-coverage);pixels[p+1]=green*coverage+bg[1]*(1-coverage);pixels[p+2]=blue*coverage+bg[2]*(1-coverage);pixels[p+3]=255;}
+        pixels[p]=red;pixels[p+1]=green;pixels[p+2]=blue;pixels[p+3]=Math.round(255*coverage);
       }
       if(y%48===0){onProgress(.85+.14*y/n,'绘制分层设色与地形晕渲…');await pause();}
     }
