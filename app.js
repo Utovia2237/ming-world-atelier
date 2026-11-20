@@ -8,6 +8,7 @@
   const mixRanges=['mountainNetwork','mountainChain','mountainStretch'];
   const bools=['hillshade','contours','bathymetry','ticks'];
   const status=$('map-state'),canvas=$('map'),generationLoading=$('generation-loading'),generationProgress=$('generation-progress'),generationBars=document.querySelector('.generation-bars'),workspace=document.querySelector('.map-workspace');
+  const mapScale=$('map-scale'),mapScaleEnd=$('map-scale-end'),mapScaleLine=mapScale.querySelector('.map-scale-line');
   $('centralIslandSize').min='0';$('centralIslandSize').max='0.1';$('centralIslandSize').step='0.01';
   function toast(message){$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4200);}
   function saveLocal(){try{localStorage.setItem(STORE,JSON.stringify({draft:settings,applied:appliedSettings}));}catch{}}
@@ -198,8 +199,19 @@
   $('save-project').onclick=()=>{const snapshot=structuredClone(appliedSettings);snapshot.exportSize=settings.exportSize;download(new Blob([JSON.stringify({format:'ming-world-atelier',...snapshot},null,2)],{type:'application/json'}),filename(snapshot,'.json'));toast('项目参数已保存。');};$('load-project').onclick=()=>$('project-file').click();
   $('project-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>100000)throw Error('项目文件过大。');const parsed=JSON.parse(await file.text());if(parsed.format!=='ming-world-atelier'||parsed.version!==Engine.VERSION)throw Error('项目版本与当前生成器不一致，无法保证复现。');settings=Engine.validate(parsed);settings.fade=20;settings.coastline=true;settings.transparent=true;syncUI();fit();requestPreview(true);toast('项目已导入。');}catch(error){toast('导入失败：'+error.message);}e.target.value='';};
   $('reset').onclick=()=>{settings=freshSettings();syncUI();fit();requestPreview(true);toast('已恢复初始设置。');};$('help-button').onclick=()=>$('help-dialog').showModal();$('close-help').onclick=()=>$('help-dialog').close();for(const id of ['help-dialog','export-dialog'])$(id).addEventListener('click',e=>{if(e.target!==$(id))return;const rect=e.target.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)e.target.close();});
-  function transform(){$('map-holder').style.transform='translate('+view.x+'px,'+view.y+'px) scale('+view.zoom+')';}function fit(){view={zoom:1,x:0,y:0};transform();}function zoom(factor,cx=0,cy=0){const old=view.zoom;view.zoom=Math.max(.65,Math.min(6,view.zoom*factor));const ratio=view.zoom/old;view.x=cx-(cx-view.x)*ratio;view.y=cy-(cy-view.y)*ratio;transform();}
+  function formatScaleDistance(kilometers){const rounded=Number(kilometers.toPrecision(3));return rounded.toLocaleString('zh-CN',{maximumFractionDigits:2});}
+  function updateMapScale(){
+    const holder=$('map-holder'),mapRect=holder.getBoundingClientRect();
+    const diameterPixels=mapRect.width*2*Engine.MAP_RADIUS;if(!diameterPixels)return;
+    const fullDiameterKm=Engine.MAP_DIAMETER_KM*Engine.MAP_SCALE_DISPLAY_FACTOR,kmPerPixel=fullDiameterKm/diameterPixels;
+    const targetPixels=Math.min(108,Math.max(72,window.innerWidth*.28)),rawDistance=kmPerPixel*targetPixels,unit=10**Math.floor(Math.log10(rawDistance)),ratio=rawDistance/unit;
+    const distance=(ratio>=5?5:ratio>=2?2:1)*unit,width=distance/kmPerPixel,end=formatScaleDistance(distance);
+    mapScale.style.width=width+'px';mapScaleLine.style.width=width+'px';mapScaleEnd.textContent=end+' km';
+    mapScale.dataset.distanceKm=String(distance);mapScale.setAttribute('aria-label','比例尺：0 至 '+end+' 千米；全图直径 '+formatScaleDistance(fullDiameterKm)+' 千米');
+  }
+  function transform(){$('map-holder').style.transform='translate('+view.x+'px,'+view.y+'px) scale('+view.zoom+')';updateMapScale();}function fit(){view={zoom:1,x:0,y:0};transform();}function zoom(factor,cx=0,cy=0){const old=view.zoom;view.zoom=Math.max(.65,Math.min(6,view.zoom*factor));const ratio=view.zoom/old;view.x=cx-(cx-view.x)*ratio;view.y=cy-(cy-view.y)*ratio;transform();}
+  window.addEventListener('resize',updateMapScale);if(window.ResizeObserver){const scaleObserver=new ResizeObserver(updateMapScale);scaleObserver.observe($('viewport'));scaleObserver.observe($('map-holder'));}
   $('zoom-fit').onclick=fit;$('zoom-in').onclick=()=>zoom(1.25);$('zoom-out').onclick=()=>zoom(.8);
   $('viewport').addEventListener('wheel',e=>{e.preventDefault();const rect=e.currentTarget.getBoundingClientRect();zoom(Math.exp(-e.deltaY*.0015),e.clientX-rect.left-rect.width/2,e.clientY-rect.top-rect.height/2);},{passive:false});$('viewport').addEventListener('pointerdown',e=>{if(e.button!==0)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};e.currentTarget.setPointerCapture(e.pointerId);});$('viewport').addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;view.x=drag.vx+e.clientX-drag.x;view.y=drag.vy+e.clientY-drag.y;transform();});$('viewport').addEventListener('pointerup',()=>drag=null);$('viewport').addEventListener('pointercancel',()=>drag=null);$('viewport').addEventListener('dblclick',fit);
-  window.mingApp={ready:false,error:null,stats:null,getSettings:()=>structuredClone(settings),getAppliedSettings:()=>structuredClone(appliedSettings),generate:()=>renderPreview(),exportMap,drawDecoration,paint};syncUI();renderPreview(appliedSettings);
+  window.mingApp={ready:false,error:null,stats:null,getSettings:()=>structuredClone(settings),getAppliedSettings:()=>structuredClone(appliedSettings),generate:()=>renderPreview(),exportMap,drawDecoration,paint};syncUI();updateMapScale();renderPreview(appliedSettings);
 })();

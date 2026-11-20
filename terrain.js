@@ -33,6 +33,7 @@
   // The old radius was .474 of the square width. .495 is the largest
   // practical expansion that keeps the circle inside every square export.
   const MAP_RADIUS=.495;
+  const MAP_DIAMETER_KM=200,MAP_SCALE_DISPLAY_FACTOR=10;
   const TAU=Math.PI*2;
   const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
   const smooth=(a,b,v)=>{const t=clamp((v-a)/(b-a));return t*t*(3-2*t);};
@@ -70,7 +71,7 @@
     const bounds={ocean:[10,20],coast:[0,100],coastStretch:[0,100],centralIslandSize:[0,.1],mountains:[0,100],mountainRadius:[45,93],mountainVariance:[0,25],mountainNetwork:[0,100],mountainChain:[0,100],mountainStretch:[0,100],islands:[0,100],relief:[0,100],lightHeight:[10,40],shade:[0,100]};
     for(const [k,[a,b]]of Object.entries(bounds))if(Number.isFinite(input[k]))out[k]=clamp(input[k],a,b);
     for(const k of ['hillshade','contours','bathymetry','ticks'])if(typeof input[k]==='boolean')out[k]=input[k];
-    if([200,400,800].includes(input.contourInterval))out.contourInterval=input.contourInterval;
+    if([200,400,600,800].includes(input.contourInterval))out.contourInterval=input.contourInterval;
     if([1536,2880,4096].includes(input.exportSize))out.exportSize=input.exportSize;
     if(['smooth','bands','contours'].includes(input.colorMode))out.colorMode=input.colorMode;
     if(typeof input.background==='string'&&/^#[\da-f]{6}$/i.test(input.background))out.background=input.background;
@@ -452,5 +453,5 @@
     const parts=[new Uint8Array([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('tEXt',new TextEncoder().encode('Description\0Ming heightmap; grayscale16; meters = value / 65535 * 16000 - 8000; outside=0; version='+VERSION)),chunk('IDAT',compressed),chunk('IEND',new Uint8Array(0))];
     const out=new Uint8Array(parts.reduce((n,p)=>n+p.length,0));let offset=0;for(const p of parts){out.set(p,offset);offset+=p.length;}return out;
   }
-  return{VERSION,MAP_RADIUS,Noise,presets,defaults,validate,terrainKey,generate,render,heightPNG,hashSeed,rgb,colorTable};
+  return{VERSION,MAP_RADIUS,MAP_DIAMETER_KM,MAP_SCALE_DISPLAY_FACTOR,Noise,presets,defaults,validate,terrainKey,generate,render,heightPNG,hashSeed,rgb,colorTable};
 });

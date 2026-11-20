@@ -133,6 +133,10 @@
         <div class="map-status-bar map-info">
           <span class="map-state world-state-text" id="map-state" role="status" aria-live="polite">正在生成</span><span class="status-hatch hazard" aria-hidden="true"></span>
         </div>
+        <div id="map-scale" class="map-scale" role="img" aria-label="地图比例尺">
+          <div class="map-scale-labels" aria-hidden="true"><span>0</span><span id="map-scale-end">0 km</span></div>
+          <div class="map-scale-line" aria-hidden="true"><i></i><i></i></div>
+        </div>
       </section>
       <aside class="sidebar style-sidebar control-column right-column" aria-label="地形风格参数">
         <div class="material-shell appearance-shell">
@@ -207,6 +211,7 @@
             <label class="toggle-row"><span><strong>陆地等高线</strong></span><input type="checkbox" id="contours"><i></i></label><label class="field-label" for="contour-interval">等高距</label><select id="contour-interval">
               <option value="200">200 米 · 精细</option>
               <option value="400" selected="">400 米 · 标准</option>
+              <option value="600">600 米 · 适中</option>
               <option value="800">800 米 · 简洁</option>
             </select>
             <label class="toggle-row"><span><strong>海底分层</strong></span><input type="checkbox" id="bathymetry" checked=""><i></i></label><label class="toggle-row"><span><strong>圆周刻度与轴线</strong></span><input type="checkbox" id="ticks"><i></i></label>
