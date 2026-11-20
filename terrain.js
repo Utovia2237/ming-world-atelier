@@ -33,7 +33,7 @@
   // The old radius was .474 of the square width. .495 is the largest
   // practical expansion that keeps the circle inside every square export.
   const MAP_RADIUS=.495;
-  const MAP_DIAMETER_KM=200,MAP_SCALE_DISPLAY_FACTOR=10;
+  const MAP_DIAMETER_KM=200,MAP_SCALE_DISPLAY_FACTOR=20;
   const TAU=Math.PI*2;
   const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
   const smooth=(a,b,v)=>{const t=clamp((v-a)/(b-a));return t*t*(3-2*t);};
