@@ -13,15 +13,13 @@
 @media (min-width: 901px) {
   .terrain-sidebar > .panel-scroll {
     clip-path: none;
-    border-radius: var(--cut) 0 calc(var(--cut) + var(--scrollbar-size)) 0;
-    corner-shape: bevel;
-    border-shape: polygon(var(--cut) 0, 100% 0, 100% 100%, calc(100% - var(--scrollbar-size)) 100%, calc(100% - var(--scrollbar-size)) calc(100% - var(--cut)), calc(100% - var(--scrollbar-size) - var(--cut)) 100%, 0 100%, 0 var(--cut));
   }
 }
 .terrain-sidebar > .seed-shell,
 .style-sidebar > .appearance-shell,
 .style-sidebar > .import-shell,
 .map-workspace > .map-meta,
+.terrain-sidebar > .panel-scroll > .material-shell,
 .style-sidebar > .right-scroll > .material-shell {
   background: var(--plane);
   backdrop-filter: blur(20px) saturate(1.1);
@@ -30,6 +28,52 @@
 }
 .style-sidebar > .right-scroll > .material-shell {
   position: relative;
+}
+.terrain-sidebar > .panel-scroll,
+.terrain-sidebar > .panel-scroll > .material-shell {
+  overflow: hidden;
+}
+.terrain-sidebar > .panel-scroll > .material-shell {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+.terrain-sidebar > .panel-scroll > .material-shell > .terrain-content {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+}
+.terrain-sidebar > .panel-scroll > .material-shell > .terrain-content > .material-module {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  clip-path: none;
+}
+.terrain-sidebar .terrain-divider {
+  height: 1px;
+  margin: 0 22px 16px;
+  background: var(--line);
+}
+.terrain-sidebar .mountain-mix {
+  border-top: 1px dashed color-mix(in srgb, var(--line) 60%, var(--ink) 40%);
+}
+@media (max-width: 900px) {
+  .terrain-sidebar > .panel-scroll,
+  .terrain-sidebar > .panel-scroll > .material-shell {
+    overflow: visible;
+  }
+  .terrain-sidebar > .panel-scroll > .material-shell {
+    flex: none;
+    height: auto;
+  }
+  .terrain-sidebar > .panel-scroll > .material-shell > .terrain-content {
+    height: auto;
+    overflow: visible;
+  }
 }
 .style-sidebar > .right-scroll > .material-shell:has(> .panel[hidden]) {
   display: none;

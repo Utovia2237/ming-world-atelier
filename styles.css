@@ -103,7 +103,7 @@ a { color: inherit; }
 .sidebar-heading h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 1px; }
 .sidebar-heading > span { margin-left: auto; color: var(--muted); font: 12px var(--mono); }
 .panel-scroll { min-height: 0; flex: 1; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; overscroll-behavior: contain; padding-bottom: 1px; clip-path: polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut)); position: relative; pointer-events: auto; }
-.terrain-sidebar .panel-scroll { --scrollbar-size: 8px; width: calc(100% + var(--scrollbar-size)); margin-right: calc(-1 * var(--scrollbar-size)); overflow-x: hidden; clip-path: polygon(var(--cut) 0,100% 0,100% 100%,calc(100% - var(--scrollbar-size)) 100%,calc(100% - var(--scrollbar-size)) calc(100% - var(--cut)),calc(100% - var(--scrollbar-size) - var(--cut)) 100%,0 100%,0 var(--cut)); }
+.terrain-sidebar .panel-scroll { --scrollbar-size: 8px; width: calc(100% + var(--scrollbar-size)); margin-right: calc(-1 * var(--scrollbar-size)); overflow-x: hidden; padding-bottom: 0; clip-path: polygon(var(--cut) 0,100% 0,100% 100%,calc(100% - var(--scrollbar-size)) 100%,calc(100% - var(--scrollbar-size)) calc(100% - var(--cut)),calc(100% - var(--scrollbar-size) - var(--cut)) 100%,0 100%,0 var(--cut)); }
 .terrain-sidebar .panel-scroll::-webkit-scrollbar { width: 8px; }
 .terrain-sidebar .panel-scroll::-webkit-scrollbar-thumb { background: var(--line); border: 2px solid transparent; background-clip: padding-box; }
 .terrain-sidebar .panel-scroll::-webkit-scrollbar-track { background: transparent; }
